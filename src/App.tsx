@@ -11,14 +11,33 @@ function App() {
   const [todos, setTodos] = useState<Array<Schema["Todo"]["type"]>>([]);
   
   useEffect(() => {
-    client.models.Todo.observeQuery().subscribe({
-      next: (data) => setTodos([...data.items]),
-    });
+    //fetchTodos();
+    const sub = client.models.Todo.observeQuery().subscribe({
+      next: ({ items }) => {
+        setTodos([...items]);
+      },
+    }); // This will subscribe to real-time updates for the Todo model. 
+
+    return () => sub.unsubscribe();
   }, []);
 
-  function createTodo() {
-    client.models.Todo.create({ content: window.prompt("Todo content") });
+  // function createTodo() {
+  //   client.models.Todo.create({ content: window.prompt("Todo content") });
+  // }
+
+  const createTodo = async () => {
+    await client.models.Todo.create({
+      content: window.prompt("What do you need to do?"),
+      isDone: false,
+    });
+
+    //fetchTodos();
   }
+
+  const fetchTodos = async () => {
+    const { data: items, errors } = await client.models.Todo.list();
+    setTodos(items);
+  };
     
   function deleteTodo(id: string) {
     client.models.Todo.delete({ id })
@@ -36,9 +55,6 @@ function App() {
       <div>
         🥳 App successfully hosted. Try creating a new todo.
         <br />
-        <a href="https://docs.amplify.aws/react/start/quickstart/#make-frontend-updates">
-          Review next step of this tutorial.
-        </a>
       </div>
 
       <button onClick={signOut}>Sign out</button>
