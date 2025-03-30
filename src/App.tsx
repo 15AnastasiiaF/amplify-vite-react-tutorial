@@ -9,9 +9,10 @@ function App() {
   const { user, signOut } = useAuthenticator();
 
   const [todos, setTodos] = useState<Array<Schema["Todo"]["type"]>>([]);
+  const [helloResult, setHelloResult] = useState<string | null>(null);
   
   useEffect(() => {
-    //fetchTodos();
+    fetchTodos();
     const sub = client.models.Todo.observeQuery().subscribe({
       next: ({ items }) => {
         setTodos([...items]);
@@ -36,11 +37,20 @@ function App() {
 
   const fetchTodos = async () => {
     const { data: items, errors } = await client.models.Todo.list();
-    setTodos(items);
+    console.log("Todos from list: ", items);
+    //setTodos(items);
   };
     
   function deleteTodo(id: string) {
     client.models.Todo.delete({ id })
+  }
+
+  async function sayHello() {
+    const result = await client.queries.sayHello({
+      name: "Amplify", 
+    });
+    console.log("result.data", result.data);
+    setHelloResult(result.data);
   }
 
   return (
@@ -59,6 +69,9 @@ function App() {
 
       <button onClick={signOut}>Sign out</button>
 
+      <button onClick={sayHello}>Say Hello</button>
+      {helloResult && <p>{helloResult}</p>}
+      
     </main>
   );
 }
