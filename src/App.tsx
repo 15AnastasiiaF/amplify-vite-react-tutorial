@@ -36,7 +36,7 @@ function App() {
   }
 
   const fetchTodos = async () => {
-    const { data: items, errors } = await client.models.Todo.list();
+    const { data: items } = await client.models.Todo.list();
     console.log("Todos from list: ", items);
     //setTodos(items);
   };
