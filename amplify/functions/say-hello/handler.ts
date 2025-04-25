@@ -12,7 +12,7 @@ export const handler: Schema["sayHello"]["functionHandler"] = async (event) => {
     const { name } = event.arguments
 
     console.log(`Environment variable NAME: ${env.NAME}`);
-    console.log("Environment variable NAME:", env.OPENAI_API_KEY);
+    console.log("Environment variable API-key:", env.OPENAI_API_KEY);
 
     const prompt = `Generate a greeting for ${name}`;
     const response = await openai.chat.completions.create({
